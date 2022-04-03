@@ -28,94 +28,52 @@ class BasicModel(torch.nn.Module):
         self.out_channels = output_channels
         self.output_feature_shape = output_feature_sizes
 
+        #Task 4a,b
         self.conv_layer1= torch.nn.Sequential(
-            
             torch.nn.Conv2d(in_channels=image_channels, out_channels=32, kernel_size=3, stride=1,padding=1),
+            torch.nn.ReLU(),
             torch.nn.MaxPool2d(kernel_size = 2, stride = 2),
-            torch.nn.BatchNorm2d(32),
-            torch.nn.LeakyReLU(),
             torch.nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1,padding=1),
-            torch.nn.MaxPool2d(kernel_size = 2, stride = 2),
-            torch.nn.BatchNorm2d(64),
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1,padding=1),
-            torch.nn.BatchNorm2d(64),
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1,padding=1),
-            torch.nn.BatchNorm2d(64),
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=64, out_channels=output_channels[0], kernel_size=3, stride=2,padding=1),
-            torch.nn.BatchNorm2d(output_channels[0]),
-            torch.nn.LeakyReLU(),
-            torch.nn.Dropout(0.25)
-            
+            torch.nn.ReLU()
         )
-        
         self.conv_layer2 = torch.nn.Sequential(
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=output_channels[0], out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=128, out_channels=output_channels[1], kernel_size=3, stride=2, padding=1),
-            torch.nn.BatchNorm2d(output_channels[1]),
-            torch.nn.LeakyReLU(),
-            torch.nn.Dropout(0.25)
+            torch.nn.ReLU()
         )
-        
         self.conv_layer3 = torch.nn.Sequential(
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=output_channels[1], out_channels=256, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(256),
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(256),
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=256, out_channels=output_channels[2], kernel_size=3, stride=2, padding=1),
-            torch.nn.BatchNorm2d(output_channels[2]),
-            torch.nn.LeakyReLU(),
-            torch.nn.Dropout(0.25)
+            torch.nn.ReLU()
         )
-        
         self.conv_layer4 = torch.nn.Sequential(
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=output_channels[2], out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=128, out_channels=output_channels[3], kernel_size=3, stride=2, padding=1),
-            torch.nn.BatchNorm2d(output_channels[3]),
-            torch.nn.LeakyReLU(),
-            torch.nn.Dropout(0.25)
+            torch.nn.ReLU()
         )
-        
         self.conv_layer5 = torch.nn.Sequential(
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=output_channels[3], out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(),
+            torch.nn.ReLU(),
             torch.nn.Conv2d(in_channels=128, out_channels=output_channels[4], kernel_size=3, stride=2, padding=1),
-            torch.nn.BatchNorm2d(output_channels[4]),
-            torch.nn.LeakyReLU(),
-            torch.nn.Dropout(0.25)
+            torch.nn.ReLU()
         )
-        
         self.conv_layer6 = torch.nn.Sequential(
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=output_channels[4], out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1),
-            torch.nn.LeakyReLU(),
-            torch.nn.Conv2d(in_channels=128, out_channels=output_channels[5], kernel_size=3, stride=1, padding=0),
-            torch.nn.LeakyReLU(),
-            torch.nn.Dropout(0.25)
+            torch.nn.ReLU(),
+            torch.nn.Conv2d(in_channels=output_channels[4], out_channels=128, kernel_size=2, stride=1, padding=1),
+            torch.nn.ReLU(),
+            torch.nn.Conv2d(in_channels=128, out_channels=output_channels[5], kernel_size=2, stride=1, padding=0),
+            torch.nn.ReLU()
         )
 
         self.feature_extractor = [self.conv_layer1, self.conv_layer2, self.conv_layer3, self.conv_layer4, self.conv_layer5, self.conv_layer6]
