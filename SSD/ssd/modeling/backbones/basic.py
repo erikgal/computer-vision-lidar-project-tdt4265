@@ -2,7 +2,6 @@ import torch
 from torch import nn
 from typing import Tuple, List
 
-
 class BasicModel(torch.nn.Module):
     """
     This is a basic backbone for SSD.
@@ -32,7 +31,7 @@ class BasicModel(torch.nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
-            #nn.MaxPool2d(kernel_size=2, stride=2),
+            #nn.MaxPool2d(kernel_size=2, stride=2) ,
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
             nn.ReLU(),
             nn.Conv2d(in_channels=64, out_channels=output_channels[0], kernel_size=3, stride=2, padding=1),
