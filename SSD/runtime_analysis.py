@@ -11,6 +11,8 @@ from tops.checkpointer import load_checkpoint
 @torch.no_grad()
 def evaluation(cfg, N_images: int):
     model =instantiate(cfg.model)
+    pytorch_total_params = sum(p.numel() for p in model.parameters())
+    print("\n", "Total number of parameters in model: ", pytorch_total_params)
     model.eval()
     model = tops.to_cuda(model)
     ckpt = load_checkpoint(cfg.output_dir.joinpath("checkpoints"), map_location=tops.get_device())
