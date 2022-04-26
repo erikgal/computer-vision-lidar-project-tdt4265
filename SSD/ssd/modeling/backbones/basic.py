@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from typing import Tuple, List
+import torchvision.models as models
 
 class BasicModel(torch.nn.Module):
     """
