@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 import torch.nn as nn
 from .anchor_encoder import AnchorEncoder
 from torchvision.ops import batched_nms
@@ -49,7 +50,7 @@ class DeeperRegHeads(nn.Module):
 
         )
 
-        self.classification_layes = nn.Sequential(
+        self.classification_layers = nn.Sequential(
             nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
@@ -66,9 +67,9 @@ class DeeperRegHeads(nn.Module):
                       padding=1)  # keep last layer same as before
 
         )
-        # for i in range(self.n_boxes):
-        self.classification_heads.append(self.classification_layes)
-        self.regression_heads.append(self.regression_layers)
+        for i in range(self.n_boxes):
+            self.classification_heads.append(self.classification_layers)
+            self.regression_heads.append(self.regression_layers)
 
         '''
         # Initialize output heads that are applied to each feature map from the backbone.
@@ -85,11 +86,22 @@ class DeeperRegHeads(nn.Module):
         self._init_weights()
 
     def _init_weights(self):
-        layers = [*self.regression_heads, *self.classification_heads]
-        for layer in layers:
+        b = np.log(0.99 * ((self.num_classes - 1)/0.01))
+        last_layer_bias = self.classification_layers[8].bias.data
+        nn.init.constant_(last_layer_bias, 0.)
+        nn.init.constant_(last_layer_bias[0:6], b)
+
+        regression_layers = [self.regression_heads]
+        classification_layers = [self.classification_heads]
+        for layer in regression_layers:
             for param in layer.parameters():
                 if param.dim() > 1:
-                    nn.init.xavier_uniform_(param)
+                    torch.nn.init.kaiming_uniform_(param)
+
+        for layer in classification_layers:
+            for param in layer.parameters():
+                if param.dim() > 1:
+                    torch.nn.init.kaiming_uniform_(param)
 
     def regress_boxes(self, features):
         locations = []
