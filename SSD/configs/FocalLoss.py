@@ -1,13 +1,8 @@
-from ssd.modeling import AnchorBoxes
-from tops.config import LazyCall as L
-from ssd.modeling.backbones import FPN_KRISTIAN
-from ssd.modeling.focal_loss import FocalLoss
 from .FPN import (
     train, 
     optimizer, 
     anchors,
     schedulers, 
-    #loss_objective,
     model, 
     backbone, 
     data_train, 
@@ -17,8 +12,10 @@ from .FPN import (
     gpu_transform,
     label_map
 )
+from tops.config import LazyCall as L
+from ssd.modeling.focal_loss import FocalLoss
 
-loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.1,*[1 for i in range(model.num_classes-1)]])
+loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.1, *[1 for i in range(model.num_classes-1)]])
 
 
 
