@@ -3,7 +3,6 @@ from .FocalLoss import (
     optimizer,
     schedulers,
     loss_objective,
-    # model
     data_train,
     data_val,
     val_cpu_transform,

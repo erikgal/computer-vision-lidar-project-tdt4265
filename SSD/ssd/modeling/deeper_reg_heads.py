@@ -30,7 +30,6 @@ class DeeperRegHeads(nn.Module):
         in_ch = 256
 
         # construction of the deeper regression heads
-
         self.regression_layers = nn.Sequential(
             nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
@@ -66,23 +65,17 @@ class DeeperRegHeads(nn.Module):
                       padding=1)  # keep last layer same as before
 
         )
-        # for i in range(self.n_boxes):
-        self.classification_heads.append(self.classification_layes)
-        self.regression_heads.append(self.regression_layers)
-
-        '''
-        # Initialize output heads that are applied to each feature map from the backbone.
-        for n_boxes, out_ch in zip(anchors.num_boxes_per_fmap, self.feature_extractor.out_channels):
-            self.regression_heads.append(
-                nn.Conv2d(out_ch, n_boxes * 4, kernel_size=3, padding=1))
-            self.classification_heads.append(
-                nn.Conv2d(out_ch, n_boxes * self.num_classes, kernel_size=3, padding=1))
-        '''
+        for i in range(self.n_boxes):
+            self.classification_heads.append(self.classification_layes)
+            self.regression_heads.append(self.regression_layers)
+        
 
         self.regression_heads = nn.ModuleList(self.regression_heads)
         self.classification_heads = nn.ModuleList(self.classification_heads)
         self.anchor_encoder = AnchorEncoder(anchors)
         self._init_weights()
+        
+
 
     def _init_weights(self):
         layers = [*self.regression_heads, *self.classification_heads]
