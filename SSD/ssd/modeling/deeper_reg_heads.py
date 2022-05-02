@@ -11,7 +11,8 @@ class DeeperRegHeads(nn.Module):
                  anchors,
                  loss_objective,
                  num_classes: int,
-                 anchor_prob_init
+                 anchor_prob_init,
+                 p: int,
                  ):
 
         super().__init__()
@@ -27,6 +28,7 @@ class DeeperRegHeads(nn.Module):
         self.classification_heads = []
         # parameters for deeper head regression
         self.n_boxes = 6
+        self.p = p
         out_ch = 256
         in_ch = 256
 
@@ -67,20 +69,16 @@ class DeeperRegHeads(nn.Module):
 
         )
         for i in range(self.n_boxes):
-            self.classification_heads.append(self.classification_layes)
+            self.classification_heads.append(self.classification_layers)
             self.regression_heads.append(self.regression_layers)
 
         self.regression_heads = nn.ModuleList(self.regression_heads)
         self.classification_heads = nn.ModuleList(self.classification_heads)
         self.anchor_encoder = AnchorEncoder(anchors)
         self._init_weights()
-
+    
     def _init_weights(self):
-        b = np.log(0.99 * ((self.num_classes - 1)/0.01))
-        last_layer_bias = self.classification_layers[8].bias.data
-        nn.init.constant_(last_layer_bias, 0.)
-        nn.init.constant_(last_layer_bias[0:6], b)
-
+       
         regression_layers = [self.regression_heads]
         classification_layers = [self.classification_heads]
         for layer in regression_layers:
@@ -93,6 +91,18 @@ class DeeperRegHeads(nn.Module):
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
 
+        b = np.log(self.p * ( (self.num_classes - 1)/(1 - self.p)) )
+        last_layer_bias = self.classification_layers[8].bias.data
+        nn.init.constant_(last_layer_bias, 0.)
+        nn.init.constant_(last_layer_bias[0:6], b)
+
+    """
+    def _init_weights(self):
+        layers = [*self.regression_heads, *self.classification_heads]
+        for layer in layers:
+            for param in layer.parameters():
+                if param.dim() > 1: nn.init.xavier_uniform_(param)
+    """
     def regress_boxes(self, features):
         locations = []
         confidences = []

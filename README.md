@@ -15,7 +15,7 @@ In this course, all assignments are given in python. You can do the assignments 
 
 - Your own computer: Follow our [python setup instructions](python_setup_instructions.md) to setup your own environment
 
-### Download the starter code
+###  the starter code
 
 Clone this repostiory:
 
