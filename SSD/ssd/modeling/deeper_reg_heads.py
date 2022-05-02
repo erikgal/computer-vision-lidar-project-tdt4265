@@ -75,11 +75,7 @@ class DeeperRegHeads(nn.Module):
         self.anchor_encoder = AnchorEncoder(anchors)
         self._init_weights()
 
-    def _init_weights(self):
-        b = np.log(0.99 * ((self.num_classes - 1)/0.01))
-        last_layer_bias = self.classification_layers[8].bias.data
-        nn.init.constant_(last_layer_bias, 0.)
-        nn.init.constant_(last_layer_bias[0:6], b)
+       def _init_weights(self):
 
         regression_layers = [self.regression_heads]
         classification_layers = [self.classification_heads]
@@ -87,11 +83,20 @@ class DeeperRegHeads(nn.Module):
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
+                    if isIstance(nn.Conv2d, layer):
+                        nn.init.constant_(layer.bias.data, 0.)
 
         for layer in classification_layers:
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
+                    if isIstance(nn.Conv2d, layer):
+                        nn.init.constant_(layer.bias.data, 0.)
+
+        b = np.log(0.99 * ((self.num_classes - 1)/0.01))
+        last_layer_bias = self.classification_layers[8].bias.data
+        nn.init.constant_(last_layer_bias, 0.)
+        nn.init.constant_(last_layer_bias[0:6], b)
 
     def regress_boxes(self, features):
         locations = []
