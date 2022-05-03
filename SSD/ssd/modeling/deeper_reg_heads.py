@@ -78,14 +78,6 @@ class DeeperRegHeads(nn.Module):
         self._init_weights()
     
     def _init_weights(self):
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-       
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
-       
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
         regression_layers = [self.regression_heads]
         classification_layers = [self.classification_heads]
         for layer in regression_layers:
@@ -98,27 +90,13 @@ class DeeperRegHeads(nn.Module):
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        b = np.log(0.99 * ((self.num_classes - 1)/0.01))
-=======
         b = np.log(self.p * ( (self.num_classes - 1)/(1 - self.p)) )
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
-        b = np.log(self.p * ( (self.num_classes - 1)/(1 - self.p)) )
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
         last_layer_bias = self.classification_layers[8].bias.data
         nn.init.constant_(last_layer_bias, 0.)
         nn.init.constant_(last_layer_bias[0:6], b)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     
 
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
     """
     def _init_weights(self):
         layers = [*self.regression_heads, *self.classification_heads]
@@ -140,7 +118,7 @@ class DeeperRegHeads(nn.Module):
         confidences = torch.cat(confidences, 2).contiguous()
 
         return bbox_delta, confidences
-
+        
     def forward(self, img: torch.Tensor, **kwargs):
         """
             img: shape: NCHW

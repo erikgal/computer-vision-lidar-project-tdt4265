@@ -12,27 +12,15 @@ class BiFPN(nn.Module):
         P1_channels, P2_channels, P3_channels, P4_channels, P5_channels, P6_channels = fpn_sizes
         self.W_bifpn = 256
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         self.p6_upsample = nn.Upsample(scale_factor=2, mode='nearest')
 
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
         self.p5_td_conv  = nn.Conv2d(P5_channels, self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1)
         self.p5_td_conv_2  = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1)
         self.p5_td_act   = nn.ReLU()
         self.p5_td_conv_bn = nn.BatchNorm2d(self.W_bifpn)
         self.p5_td_w1    = torch.tensor(1, dtype=torch.float, requires_grad=True)
         self.p5_td_w2    = torch.tensor(1, dtype=torch.float, requires_grad=True)
-<<<<<<< HEAD
-<<<<<<< HEAD
         self.p5_upsample = nn.Upsample(scale_factor=2, mode='nearest')
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
 
         self.p4_td_conv  = nn.Conv2d(P4_channels,self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1)
         self.p4_td_conv_2  = nn.Conv2d(self.W_bifpn,self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1)
@@ -95,13 +83,7 @@ class BiFPN(nn.Module):
         self.p5_out_w1   = torch.tensor(1, dtype=torch.float, requires_grad=True)
         self.p5_out_w2   = torch.tensor(1, dtype=torch.float, requires_grad=True)
         self.p5_out_w3   = torch.tensor(1, dtype=torch.float, requires_grad=True)
-<<<<<<< HEAD
-<<<<<<< HEAD
         self.p4_downsample = nn.MaxPool2d(kernel_size=2)
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
 
         self.p6_out_conv = nn.Conv2d(P6_channels, self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1)
         self.p6_out_conv_2 = nn.Conv2d(self.W_bifpn,self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1)
@@ -109,8 +91,6 @@ class BiFPN(nn.Module):
         self.p6_out_conv_bn = nn.BatchNorm2d(self.W_bifpn)
         self.p6_out_w1   = torch.tensor(1, dtype=torch.float, requires_grad=True)
         self.p6_out_w2   = torch.tensor(1, dtype=torch.float, requires_grad=True)
-<<<<<<< HEAD
-<<<<<<< HEAD
         self.p5_downsample = nn.MaxPool2d(kernel_size=2)
 
     def forward(self, inputs):
@@ -129,31 +109,6 @@ class BiFPN(nn.Module):
          
         P4_td_inp = self.p4_td_conv(P4)
         P4_td = self.p4_td_conv_2((self.p4_td_w1 * P4_td_inp + self.p4_td_w2 * self.p5_upsample(P5_td)) /
-=======
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-
-    def forward(self, inputs):
-        epsilon = 0.0001
-        P1, P2, P3, P4, P5, P6 = inputs
-
-        P6_td  = self.p6_out_conv(P6)
-
-        P5_td_inp = self.p5_td_conv(P5)
-        P5_td = self.p5_td_conv_2((self.p5_td_w1 * P5_td_inp + self.p5_td_w2 * P6_td) /
-                                 (self.p5_td_w1 + self.p5_td_w2 + epsilon))
-
-                        
-        P5_td = self.p5_td_act(P5_td)
-        P5_td = self.p5_td_conv_bn(P5_td)
-
-         
-        P4_td_inp = self.p4_td_conv(P4)
-        P4_td = self.p4_td_conv_2((self.p4_td_w1 * P4_td_inp + self.p4_td_w2 * P5_td) /
-<<<<<<< HEAD
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
                                  (self.p4_td_w1 + self.p4_td_w2 + epsilon))
         P4_td = self.p4_td_act(P4_td)
         P4_td = self.p4_td_conv_bn(P4_td)
@@ -191,28 +146,12 @@ class BiFPN(nn.Module):
         P4_out = self.p4_out_act(P4_out)
         P4_out = self.p4_out_conv_bn(P4_out)
         
-<<<<<<< HEAD
-<<<<<<< HEAD
         P5_out = self.p5_out_conv((self.p5_out_w1 * P5_td_inp + self.p5_out_w2 * P5_td + self.p5_out_w3 * self.p4_downsample(P4_out) )
                                     / (self.p5_out_w1 + self.p5_out_w2 + self.p5_out_w3 + epsilon))
         P5_out = self.p5_out_act(P5_out)
         P5_out = self.p5_out_conv_bn(P5_out)
         
         P6_out = self.p6_out_conv_2((self.p6_out_w1 * P6_td + self.p6_out_w2 * self.p5_downsample(P5_out)) /
-=======
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-        P5_out = self.p5_out_conv((self.p5_out_w1 * P5_td_inp + self.p5_out_w2 * P5_td + self.p5_out_w3 * (P4_out) )
-                                    / (self.p5_out_w1 + self.p5_out_w2 + self.p5_out_w3 + epsilon))
-        P5_out = self.p5_out_act(P5_out)
-        P5_out = self.p5_out_conv_bn(P5_out)
-
-
-        P6_out = self.p6_out_conv_2((self.p6_out_w1 * P6_td + self.p6_out_w2 * P5_out) /
-<<<<<<< HEAD
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
                                  (self.p6_out_w1 + self.p6_out_w2 + epsilon))
         P6_out = self.p6_out_act(P6_out)
         P6_out = self.p6_out_conv_bn(P6_out)
@@ -220,26 +159,6 @@ class BiFPN(nn.Module):
 
         return [P1_out, P2_out, P3_out, P4_out, P5_out, P6_out]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-        fpn = BiFPN([40, 112, 192, 192, 1280])
-
-        c1 = torch.randn([1, 40, 64, 64])
-        c2 = torch.randn([1, 112, 32, 32])
-        c3 = torch.randn([1, 192, 16, 16])
-        c4 = torch.randn([1, 192, 16, 16])
-        c5 = torch.randn([1, 1280, 16, 16])
-
-        feats = [c1, c2, c3, c4, c5]
-        output = fpn.forward(feats)
-
-<<<<<<< HEAD
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
 class biFPN(torch.nn.Module):
         def __init__(self,
             model_type: str, 
@@ -252,14 +171,6 @@ class biFPN(torch.nn.Module):
             self.out_channels = [256, 256, 256, 256, 256, 256]
             
             model = getattr(models, model_type)(pretrained=pretrained)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            print(model)      
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
-            print(model)      
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
             
             self.layer1 = nn.Sequential(
                 model.conv1,
@@ -292,52 +203,9 @@ class biFPN(torch.nn.Module):
             )
             
             self.layers = [self.layer1, self.layer2, self.layer3, self.layer4, self.layer5, self.layer6]
-<<<<<<< HEAD
-<<<<<<< HEAD
             
             self.m = BiFPN([64, 128, 256, 512, 512, 512])
 
-=======
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-
-            img = torch.zeros((1, 3, 128, 1024))
-            
-            # output shape of layer 1
-            print("\n", "LAYER 1", self.layer1)
-            layer1_output = self.layer1(img)
-            print(layer1_output.shape, "\n")
-            
-            # output shape of layer 2
-            print("LAYER 2", self.layer2)
-            layer2_output = self.layer2(layer1_output)
-            print(layer2_output.shape, "\n")
-            
-            # output shape of layer 3
-            print("LAYER 3", self.layer3)
-            layer3_output = self.layer3(layer2_output)
-            print(layer3_output.shape, "\n")
-            
-            # output shape of layer 4
-            print("LAYER 4", self.layer4)
-            layer4_output = self.layer4(layer3_output)
-            print(layer4_output.shape, "\n")
-            
-            # output shape of layer 5
-            print("LAYER 5", self.layer5)
-            layer5_output = self.layer5(layer4_output)
-            print(layer5_output.shape, "\n")
-            
-            # output shape of layer 6
-            print("LAYER 6", self.layer6)
-            layer6_output = self.layer6(layer5_output)
-            print(layer6_output.shape, "\n")
-            
-            self.m = torchvision.ops.FeaturePyramidNetwork([64, 128, 256, 512, 512, 512], 256)
-<<<<<<< HEAD
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
             
         
         def forward(self, x):
@@ -370,22 +238,7 @@ class biFPN(torch.nn.Module):
             x['5'] = out_features[5]
             
             # compute the FPN on top of x
-<<<<<<< HEAD
-<<<<<<< HEAD
             out_features = self.m.forward(x)
-=======
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-            output = self.m(x)
-            i = 0
-            for k, v in output.items():
-                out_features[i] = output[f"{i}"]
-                i += 1
-                
-<<<<<<< HEAD
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
-=======
->>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
 
             for idx, feature in enumerate(out_features):
                 out_channel = self.out_channels[idx]
