@@ -85,16 +85,16 @@ class DeeperRegHeads(nn.Module):
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
-                if(isinstance(layer, nn.Conv2d)):
-                    nn.init.constant_(layer.bias.data, 0.)
+                #if(isinstance(layer, nn.Conv2d)):
+                 #   nn.init.constant_(layer.bias.data, 0.)
 
 
         for layer in classification_layers:
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
-                if(isinstance(layer, nn.Conv2d)):
-                    nn.init.constant_(layer.bias.data, 0.)
+                #if(isinstance(layer, nn.Conv2d)):
+                #    nn.init.constant_(layer.bias.data, 0.)
 
 
 

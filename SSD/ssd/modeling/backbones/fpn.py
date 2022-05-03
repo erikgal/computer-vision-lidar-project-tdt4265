@@ -114,12 +114,13 @@ class FPN(torch.nn.Module):
             x['3'] = out_features[3]
             x['4'] = out_features[4]
             x['5'] = out_features[5]
+            #self.x = x
             
             # compute the FPN on top of x
-            output = self.m(x)
+            self.output = self.m(x)
             i = 0
-            for k, v in output.items():
-                out_features[i] = output[f"{i}"]
+            for k, v in self.output.items():
+                out_features[i] = self.output[f"{i}"]
                 i += 1;
                 
 
