@@ -79,6 +79,10 @@ class DeeperRegHeads(nn.Module):
     
     def _init_weights(self):
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+       
+>>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
 =======
        
 >>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
@@ -95,7 +99,11 @@ class DeeperRegHeads(nn.Module):
                     torch.nn.init.kaiming_uniform_(param)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         b = np.log(0.99 * ((self.num_classes - 1)/0.01))
+=======
+        b = np.log(self.p * ( (self.num_classes - 1)/(1 - self.p)) )
+>>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
 =======
         b = np.log(self.p * ( (self.num_classes - 1)/(1 - self.p)) )
 >>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
@@ -104,8 +112,11 @@ class DeeperRegHeads(nn.Module):
         nn.init.constant_(last_layer_bias[0:6], b)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     
 
+=======
+>>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
 =======
 >>>>>>> 5d102b41efe871d91314614aea965a02ac5928fd
     """
