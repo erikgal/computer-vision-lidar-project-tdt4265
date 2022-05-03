@@ -78,7 +78,6 @@ class DeeperRegHeads(nn.Module):
         self._init_weights()
     
     def _init_weights(self):
-       
         regression_layers = [self.regression_heads]
         classification_layers = [self.classification_heads]
         for layer in regression_layers:
@@ -103,6 +102,8 @@ class DeeperRegHeads(nn.Module):
         nn.init.constant_(last_layer_bias, 0.)
         nn.init.constant_(last_layer_bias[0:6], b)
 
+    
+
     """
     def _init_weights(self):
         layers = [*self.regression_heads, *self.classification_heads]
@@ -124,7 +125,7 @@ class DeeperRegHeads(nn.Module):
         confidences = torch.cat(confidences, 2).contiguous()
 
         return bbox_delta, confidences
-
+        
     def forward(self, img: torch.Tensor, **kwargs):
         """
             img: shape: NCHW
