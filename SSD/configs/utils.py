@@ -12,8 +12,8 @@ def get_dataset_dir(dataset_relpath: str):
     return str(pathlib.Path("data", dataset_relpath))
 
 def get_output_dir():
-    work_dir = pathlib.Path("/work", "snotra", getpass.getuser())
-    save_in_work = False
+    work_dir = pathlib.Path("/work", getpass.getuser())
+    save_in_work = True
     if work_dir.is_dir():
         print(f"It looks like you are currently working on the server, with a 'working directory' in: {work_dir}")
         if save_in_work:
