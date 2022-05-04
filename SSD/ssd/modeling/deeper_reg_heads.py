@@ -84,11 +84,18 @@ class DeeperRegHeads(nn.Module):
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
+                #if(isinstance(layer, nn.Conv2d)):
+                 #   nn.init.constant_(layer.bias.data, 0.)
+
 
         for layer in classification_layers:
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
+                #if(isinstance(layer, nn.Conv2d)):
+                #    nn.init.constant_(layer.bias.data, 0.)
+
+
 
         b = np.log(self.p * ( (self.num_classes - 1)/(1 - self.p)) )
         last_layer_bias = self.classification_layers[8].bias.data
