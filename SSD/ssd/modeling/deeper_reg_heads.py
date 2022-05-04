@@ -76,46 +76,28 @@ class DeeperRegHeads(nn.Module):
         self.classification_heads = nn.ModuleList(self.classification_heads)
         self.anchor_encoder = AnchorEncoder(anchors)
         self._init_weights()
-<<<<<<< HEAD
-
-       def _init_weights(self):
-
-=======
     
     def _init_weights(self):
->>>>>>> 8dcf18e45262d6051b67201952ee973e109b1514
         regression_layers = [self.regression_heads]
         classification_layers = [self.classification_heads]
         for layer in regression_layers:
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
-<<<<<<< HEAD
-                    if isIstance(nn.Conv2d, layer):
-                        nn.init.constant_(layer.bias.data, 0.)
-=======
                 #if(isinstance(layer, nn.Conv2d)):
                  #   nn.init.constant_(layer.bias.data, 0.)
 
->>>>>>> 8dcf18e45262d6051b67201952ee973e109b1514
 
         for layer in classification_layers:
             for param in layer.parameters():
                 if param.dim() > 1:
                     torch.nn.init.kaiming_uniform_(param)
-<<<<<<< HEAD
-                    if isIstance(nn.Conv2d, layer):
-                        nn.init.constant_(layer.bias.data, 0.)
-
-        b = np.log(0.99 * ((self.num_classes - 1)/0.01))
-=======
                 #if(isinstance(layer, nn.Conv2d)):
                 #    nn.init.constant_(layer.bias.data, 0.)
 
 
 
         b = np.log(self.p * ( (self.num_classes - 1)/(1 - self.p)) )
->>>>>>> 8dcf18e45262d6051b67201952ee973e109b1514
         last_layer_bias = self.classification_layers[8].bias.data
         nn.init.constant_(last_layer_bias, 0.)
         nn.init.constant_(last_layer_bias[0:6], b)
