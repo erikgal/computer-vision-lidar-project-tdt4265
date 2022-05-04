@@ -5,7 +5,7 @@ from tops.config import LazyCall as L
 from ssd.data.transforms import (
     ToTensor, Normalize, Resize,
     GroundTruthBoxesToAnchors,  RandomHorizontalFlip, Resize, RandomSampleCrop, ColorJitter)
-from .ssd300 import train, anchors, optimizer, schedulers, backbone, model, data_train, data_val, loss_objective
+from .ssd300 import train, anchors, optimizer, schedulers, data_train, data_val
 from .utils import get_dataset_dir
 
 # Keep the model, except change the backbone and number of classes
@@ -19,7 +19,7 @@ anchors.feature_sizes = [[32, 256], [16, 128],
 anchors.strides = [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64], [128, 128]]
 anchors.min_sizes = [[16, 16], [32, 32], [48, 48],
                      [64, 64], [86, 86], [128, 128], [128, 400]]
-anchors.aspect_ratios = [[2, 3], [2, 3], [2, 3], [2, 3], [2, 3], [2, 3]]
+anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 4]]
 
 train_cpu_transform = L(torchvision.transforms.Compose)(transforms=[
     L(RandomSampleCrop)(),
@@ -49,3 +49,21 @@ data_train.gpu_transform = gpu_transform
 
 label_map = {idx: cls_name for idx,
              cls_name in enumerate(TDT4265Dataset.class_names)}
+
+backbone = L(FPN)(
+    model_type="resnet34", 
+    pretrained=True, 
+    output_feature_sizes="${anchors.feature_sizes}")
+
+loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.01, *[1 for i in range(model.num_classes-1)]])
+
+
+model = L(DeeperRegHeads)(
+    feature_extractor="${backbone}",
+    anchors="${anchors}",
+    loss_objective="${loss_objective}",
+    num_classes=8 + 1,
+    anchor_prob_init=False,
+    p = 0.99,
+)
+
