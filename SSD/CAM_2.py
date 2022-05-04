@@ -65,9 +65,8 @@ def run_demo(config_path: Path, score_threshold: float, image_dir: Path, output_
             orig_img, boxes, categories, scores).astype(np.uint8)
 
         target_layers = [model.feature_extractor]
-        print("Actual labels: ", categories)
         targets = [FasterRCNNBoxScoreTarget(labels=categories, bounding_boxes=boxes)] #vategories.tolist()
-        print("Targets: ", targets)
+
     
 
         cam = EigenCAM(model,
@@ -79,94 +78,51 @@ def run_demo(config_path: Path, score_threshold: float, image_dir: Path, output_
         grayscale_cam = cam(img, targets=targets)
         grayscale_cam = grayscale_cam[0, :]
         
-        cam_image = show_cam_on_image(image_float_np, grayscale_cam, use_rgb=True)
 
-        image_with_bounding_boxes = draw_boxes( cam_image, boxes, categories, scores).astype(np.uint8)
-        
+        norm_cam = renormalize_cam_in_bounding_boxes(boxes, image_float_np, grayscale_cam )
+
+        image_with_bounding_boxes = draw_boxes( norm_cam, boxes, categories, scores).astype(np.uint8)
 
         im = Image.fromarray(image_with_bounding_boxes)
+        
+
         output_path = output_dir.joinpath(f"{image_name}.png")
         im.save(output_path)
 
-        """
-        grayscale_cam = cam(img, targets=targets)
-        # Take the first image in the batch:
-        #grayscale_cam = grayscale_cam[0, :]
-        cam_image = show_cam_on_image(image_float_np, grayscale_cam, use_rgb=True)
-        # And lets draw the boxes again:
-        image_with_bounding_boxes = draw_boxes(orig_img, boxes, categories, scores)
-        im = Image.fromarray(image_with_bounding_boxes)
-        """
-"""
-def predict(input_tensor, model, detection_threshold):
-    #print("model resp:", model(input_tensor,  score_threshold=detection_threshold))
-    #print("model resp:", model(input_tensor,   score_threshold=detection_threshold))[1]
-   # print("model resp:", model(input_tensor,   score_threshold=detection_threshold))[2]
-    pred_boxes, pred_categories, pred_scores = model(input_tensor,  score_threshold=detection_threshold)[0]
-    pred_boxes, pred_categories, pred_scores = [_.cpu().numpy() for _ in [pred_boxes, pred_categories, pred_scores]]
 
+def renormalize_cam_in_bounding_boxes(boxes, image_float_np, grayscale_cam):
+    """Normalize the CAM to be in the range [0, 1] 
+    inside every bounding boxes, and zero outside of the bounding boxes. """
+    renormalized_cam = np.zeros(grayscale_cam.shape, dtype=np.float32)
+    #fix box problem with neg values
+    boxes = np.int32(np.abs(boxes))
+    images = []
+    for x1, y1, x2, y2 in boxes:
+        img = renormalized_cam * 0
+        img[y1:y2, x1:x2] = scale_cam_image(grayscale_cam[y1:y2, x1:x2].copy())    
+        images.append(img)
     
-    boxes, categories, indices = [], [], []
-    for index in range(len(pred_scores)):
-        if pred_scores[index] >= detection_threshold:
-            boxes.append(pred_boxes[index].astype(np.int32))
-            categories.append(pred_categories[index])
-            indices.append(index)
-    boxes = np.int32(boxes)
-    print("boxes: ", boxes, ", cat: ", categories, " ind: ", indices)
-    return boxes, categories, indices
-"""
-def fasterrcnn_reshape_transform(x):
-    #print("\n\ninput x:", x, "with type:", type(x))
-    #x = torch.tensor(x)
+    renormalized_cam = np.max(np.float32(images), axis = 0)
+    renormalized_cam = scale_cam_image(renormalized_cam)
+    eigencam_image_renormalized = show_cam_on_image(image_float_np, renormalized_cam, use_rgb=True)
+    #image_with_bounding_boxes = draw_boxes(boxes, labels, classes, eigencam_image_renormalized)
+    return eigencam_image_renormalized
 
-    target_size = x[0].size()[-2 : ]
+#Image.fromarray(renormalize_cam_in_bounding_boxes(boxes, image_float_np, grayscale_cam))
+
+
+def fasterrcnn_reshape_transform(x):
+
+
+    target_size = x[3].size()[-2 : ]
     activations = []
     for value in x:
         activations.append(torch.nn.functional.interpolate(torch.abs(value), target_size, mode='bilinear'))
     activations = torch.cat(activations, axis=1)
-    print("activations", activations, "with size:", activations.size, "--"*100)
     return activations
 
 
-"""
-class FasterRCNNBoxScoreTarget:
-     For every original detected bounding box specified in "bounding boxes",
-        assign a score on how the current bounding boxes match it,
-            1. In IOU
-            2. In the classification score.
-        If there is not a large enough overlap, or the category changed,
-        assign a score of 0.
 
-        The total score is the sum of all the box scores.
-    
-
-    def __init__(self, labels, bounding_boxes, iou_threshold=0.5):
-        self.labels = labels
-        self.bounding_boxes = bounding_boxes
-        self.iou_threshold = iou_threshold
-
-    def __call__(self, model_outputs):
-        output = torch.Tensor([0])
-        if torch.cuda.is_available():
-            output = output.cuda()
-
-        if len(model_outputs["boxes"]) == 0:
-            return output
-
-        for box, label in zip(self.bounding_boxes, self.labels):
-            box = torch.Tensor(box[None, :])
-            if torch.cuda.is_available():
-                box = box.cuda()
-
-            ious = torchvision.ops.box_iou(box, model_outputs["boxes"])
-            index = ious.argmax()
-            if ious[0, index] > self.iou_threshold and model_outputs["labels"][index] == label:
-                score = ious[0, index] + model_outputs["scores"][index]
-                output = output + score
-            print("output score:",output,"label", label)
-        return output
-"""
 
 if __name__ == '__main__':
     run_demo()
