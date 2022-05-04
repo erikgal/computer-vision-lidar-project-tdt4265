@@ -5,8 +5,13 @@ from tops.config import LazyCall as L
 from ssd.data.transforms import (
     ToTensor, Normalize, Resize,
     GroundTruthBoxesToAnchors,  RandomHorizontalFlip, Resize, RandomSampleCrop, ColorJitter)
-from .ssd300 import train, anchors, optimizer, schedulers, data_train, data_val
+from .ssd300 import train, anchors, optimizer, schedulers, data_train, data_val, model
 from .utils import get_dataset_dir
+from ssd.modeling.backbones import FPN
+from ssd.modeling.focal_loss import FocalLoss
+from ssd.modeling.deeper_reg_heads import DeeperRegHeads
+
+
 
 # Keep the model, except change the backbone and number of classes
 train.imshape = (128, 1024)
@@ -19,7 +24,7 @@ anchors.feature_sizes = [[32, 256], [16, 128],
 anchors.strides = [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64], [128, 128]]
 anchors.min_sizes = [[16, 16], [32, 32], [48, 48],
                      [64, 64], [86, 86], [128, 128], [128, 400]]
-anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 4]]
+anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 3]]
 
 train_cpu_transform = L(torchvision.transforms.Compose)(transforms=[
     L(RandomSampleCrop)(),
