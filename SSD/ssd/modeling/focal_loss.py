@@ -35,6 +35,8 @@ class FocalLoss(nn.Module):
         return torch.cat((gxy, gwh), dim=1).contiguous()
 
     def focal_loss(self, confs: torch.FloatTensor, gt_labels: torch.LongTensor):
+
+
         # Best value according to paper ”Focal loss for dense object detection”
         gamma = 2.0
 
@@ -44,7 +46,10 @@ class FocalLoss(nn.Module):
 
         print('\ntargets:', targets.shape, 'activation: ', activation.shape)
 
-        return -torch.sum(self.alpha * (1-activation)**gamma * targets * log_activation) / (targets.size(dim=1))
+        print("Sum from focal loss: ",-torch.sum(self.alpha * (1-activation)**gamma * targets * log_activation))
+        # return -torch.sum(self.alpha * (1-activation)**gamma * targets * log_activation) / (targets.size(dim=1))
+        return -torch.sum(self.alpha * (1-activation)**gamma * targets * log_activation)
+        
 
     def forward(self,
                 bbox_delta: torch.FloatTensor, confs: torch.FloatTensor,
@@ -68,10 +73,13 @@ class FocalLoss(nn.Module):
         regression_loss = F.smooth_l1_loss(
             bbox_delta, gt_locations, reduction="sum")
         num_pos = gt_locations.shape[0]/4
-        total_loss = regression_loss/num_pos + classification_loss
+        total_loss = regression_loss/num_pos + classification_loss/num_pos
         to_log = dict(
             regression_loss=regression_loss/num_pos,
-            classification_loss=classification_loss,
+            classification_loss=classification_loss/num_pos,
             total_loss=total_loss
         )
+        print("num_pos: ", num_pos)
+        print("total_loss: ", total_loss)
+        print("classification_loss", classification_loss)
         return total_loss, to_log

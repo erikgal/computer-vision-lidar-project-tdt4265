@@ -15,7 +15,7 @@ from .FPN import (
 from tops.config import LazyCall as L
 from ssd.modeling.focal_loss import FocalLoss
 
-loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.1, *[1 for i in range(model.num_classes-1)]])
+loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.01, *[1 for i in range(model.num_classes-1)]])
 
 
 

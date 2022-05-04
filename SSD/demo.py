@@ -13,11 +13,15 @@ from pathlib import Path
 
 @torch.no_grad()
 @click.command()
-@click.argument("config_path", type=click.Path(exists=True, dir_okay=False, path_type=Path))
-@click.argument("image_dir", type=click.Path(exists=True, dir_okay=True, path_type=Path))
-@click.argument("output_dir", type=click.Path(dir_okay=True, path_type=Path))
+@click.argument("config_path", type=click.Path(exists=True, dir_okay=False, path_type=str))
+@click.argument("image_dir", type=click.Path(exists=True, dir_okay=True, path_type=str))
+@click.argument("output_dir", type=click.Path(dir_okay=True, path_type=str))
 @click.option("-s", "--score_threshold", type=click.FloatRange(min=0, max=1), default=.3)
 def run_demo(config_path: Path, score_threshold: float, image_dir: Path, output_dir: Path):
+    config_path = Path(config_path)
+    image_dir = Path(image_dir)
+    output_dir = Path(output_dir)
+
     cfg = utils.load_config(config_path)
     model = tops.to_cuda(instantiate(cfg.model))
     model.eval()
@@ -37,6 +41,8 @@ def run_demo(config_path: Path, score_threshold: float, image_dir: Path, output_
         img = cpu_transform({"image": orig_img})["image"].unsqueeze(0)
         img = tops.to_cuda(img)
         img = gpu_transform({"image": img})["image"]
+        print("score threshold:", score_threshold)
+        print("model resp: ", model(img,score_threshold=score_threshold)[0] )
         boxes, categories, scores = model(img,score_threshold=score_threshold)[0]
         print(scores)
         boxes[:, [0, 2]] *= width
@@ -44,9 +50,15 @@ def run_demo(config_path: Path, score_threshold: float, image_dir: Path, output_
         boxes, categories, scores = [_.cpu().numpy() for _ in [boxes, categories, scores]]
         drawn_image = draw_boxes(
             orig_img, boxes, categories, scores).astype(np.uint8)
+
+        
+        
         im = Image.fromarray(drawn_image)
         output_path = output_dir.joinpath(f"{image_name}.png")
         im.save(output_path)
+
+
+
 
 if __name__ == '__main__':
     run_demo()
