@@ -5,12 +5,11 @@ from tops.config import LazyCall as L
 from ssd.data.transforms import (
     ToTensor, Normalize, Resize,
     GroundTruthBoxesToAnchors,  RandomHorizontalFlip, Resize, RandomSampleCrop, ColorJitter)
-from .ssd300 import train, anchors, model, optimizer, schedulers, data_train, data_val
+from .ssd300 import train, anchors, optimizer, schedulers, data_train, data_val, model
 from .utils import get_dataset_dir
 from ssd.modeling.backbones import FPN
-from ssd.modeling.deeper_reg_heads import DeeperRegHeads
 from ssd.modeling.focal_loss import FocalLoss
-
+from ssd.modeling.deeper_reg_heads import DeeperRegHeads
 
 
 
