@@ -118,7 +118,6 @@ class DeeperRegHeads(nn.Module):
         confidences = torch.cat(confidences, 2).contiguous()
 
         return bbox_delta, confidences
-        
     def forward(self, img: torch.Tensor, **kwargs):
         """
             img: shape: NCHW

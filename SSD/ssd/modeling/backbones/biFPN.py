@@ -206,6 +206,7 @@ class biFPN(torch.nn.Module):
             
             self.m = BiFPN([64, 128, 256, 512, 512, 512])
 
+
             
         
         def forward(self, x):
@@ -236,9 +237,8 @@ class biFPN(torch.nn.Module):
             x['3'] = out_features[3]
             x['4'] = out_features[4]
             x['5'] = out_features[5]
-            
-            # compute the FPN on top of x
             out_features = self.m.forward(x)
+
 
             for idx, feature in enumerate(out_features):
                 out_channel = self.out_channels[idx]
