@@ -30,8 +30,8 @@ class DeeperRegHeads(nn.Module):
         # parameters for deeper head regression
         self.n_boxes = 6
         self.p = p
-        out_ch = 64
-        in_ch = 64
+        out_ch = 256
+        in_ch = 256
 
         # construction of the deeper regression heads
         self.regression_layers = nn.Sequential(
