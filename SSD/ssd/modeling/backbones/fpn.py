@@ -9,12 +9,14 @@ class FPN(torch.nn.Module):
         def __init__(self,
             model_type: str, 
             pretrained: bool,
-            output_feature_sizes: List[Tuple[int]]):
+            output_feature_sizes: List[Tuple[int]],
+            out_channels: int,
+            ):
             
             super().__init__()
             
             self.output_feature_shape = output_feature_sizes
-            self.out_channels = [256, 256, 256, 256, 256, 256]
+            self.out_channels = [out_channels, out_channels, out_channels, out_channels, out_channels, out_channels]
             
             model = getattr(models, model_type)(pretrained=pretrained)
             print(model)      
@@ -83,7 +85,7 @@ class FPN(torch.nn.Module):
             layer6_output = self.layer6(layer5_output)
             print(layer6_output.shape, "\n")
             
-            self.m = torchvision.ops.FeaturePyramidNetwork([64, 128, 256, 512, 512, 512], 256)
+            self.m = torchvision.ops.FeaturePyramidNetwork([64, 128, 256, 512, 512, 512], self.out_channels[0])
             
         
         def forward(self, x):
@@ -121,7 +123,7 @@ class FPN(torch.nn.Module):
             i = 0
             for k, v in self.output.items():
                 out_features[i] = self.output[f"{i}"]
-                i += 1;
+                i += 1
                 
 
             for idx, feature in enumerate(out_features):

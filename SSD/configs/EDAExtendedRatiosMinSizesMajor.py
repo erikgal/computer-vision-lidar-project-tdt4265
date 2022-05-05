@@ -55,10 +55,14 @@ data_train.gpu_transform = gpu_transform
 label_map = {idx: cls_name for idx,
              cls_name in enumerate(TDT4265Dataset.class_names)}
 
+fpn_out_channels = 256
+
 backbone = L(FPN)(
     model_type="resnet34", 
     pretrained=True, 
-    output_feature_sizes="${anchors.feature_sizes}")
+    output_feature_sizes="${anchors.feature_sizes}",
+    out_channels=fpn_out_channels
+)
 
 loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.01, *[1 for i in range(model.num_classes-1)]])
 
@@ -70,5 +74,7 @@ model = L(DeeperRegHeads)(
     num_classes=8 + 1,
     anchor_prob_init=True,
     p = 0.99,
+    in_ch = fpn_out_channels,
+    out_ch = 256,
 )
 

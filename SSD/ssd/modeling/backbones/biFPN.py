@@ -6,11 +6,11 @@ from collections import OrderedDict
 import torchvision
 
 class BiFPN(nn.Module):
-    def __init__(self,  fpn_sizes):
+    def __init__(self,  fpn_sizes, output_channels):
         super(BiFPN, self).__init__()
         
         P1_channels, P2_channels, P3_channels, P4_channels, P5_channels, P6_channels = fpn_sizes
-        self.W_bifpn = 64
+        self.W_bifpn = output_channels
 
         self.p6_upsample = nn.Upsample(scale_factor=2, mode='nearest')
 
@@ -163,12 +163,13 @@ class biFPN(torch.nn.Module):
         def __init__(self,
             model_type: str, 
             pretrained: bool,
-            output_feature_sizes: List[Tuple[int]]):
+            output_feature_sizes: List[Tuple[int]],
+            out_channels: int):
             
             super().__init__()
             
             self.output_feature_shape = output_feature_sizes
-            self.out_channels = [64, 64, 64, 64, 64, 64]
+            self.out_channels = [out_channels, out_channels, out_channels, out_channels, out_channels, out_channels]
             
             model = getattr(models, model_type)(pretrained=pretrained)
             
@@ -204,7 +205,7 @@ class biFPN(torch.nn.Module):
             
             self.layers = [self.layer1, self.layer2, self.layer3, self.layer4, self.layer5, self.layer6]
             
-            self.m = BiFPN([64, 128, 256, 512, 512, 512])
+            self.m = BiFPN([64, 128, 256, 512, 512, 512], out_channels)
 
 
             

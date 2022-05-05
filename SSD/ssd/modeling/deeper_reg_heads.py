@@ -13,6 +13,8 @@ class DeeperRegHeads(nn.Module):
                  num_classes: int,
                  anchor_prob_init,
                  p: int,
+                 in_ch: int,
+                 out_ch: int,
                  ):
 
         super().__init__()
@@ -30,21 +32,22 @@ class DeeperRegHeads(nn.Module):
         # parameters for deeper head regression
         self.n_boxes = 6
         self.p = p
-        out_ch = 256
-        in_ch = 256
+        self.in_ch = in_ch
+        self.out_ch = out_ch
+
 
         # construction of the deeper regression heads
         self.regression_layers = nn.Sequential(
             nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
             nn.Conv2d(out_ch, self.n_boxes * 4, kernel_size=3,
@@ -56,13 +59,13 @@ class DeeperRegHeads(nn.Module):
             nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
             nn.Conv2d(out_ch, self.n_boxes * self.num_classes, kernel_size=3,

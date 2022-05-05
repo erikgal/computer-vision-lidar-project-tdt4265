@@ -14,9 +14,23 @@ from .FPN import (
 )
 from tops.config import LazyCall as L
 from ssd.modeling.backbones import biFPN
+from ssd.modeling.deeper_reg_heads import DeeperRegHeads
 
+fpn_out_channels = 64
 
 backbone = L(biFPN)(
     model_type="resnet34", 
     pretrained=True, 
-    output_feature_sizes="${anchors.feature_sizes}")
+    output_feature_sizes="${anchors.feature_sizes}",
+    out_channels=fpn_out_channels)
+
+model = L(DeeperRegHeads)(
+    feature_extractor="${backbone}",
+    anchors="${anchors}",
+    loss_objective="${loss_objective}",
+    num_classes=8 + 1,
+    anchor_prob_init=True,
+    p = 0.99,
+    in_ch = fpn_out_channels,
+    out_ch = 256,
+)

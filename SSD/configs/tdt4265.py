@@ -19,7 +19,7 @@ anchors.feature_sizes = [[32, 256], [16, 128],
 anchors.strides = [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64], [128, 128]]
 anchors.min_sizes = [[16, 16], [32, 32], [48, 48],
                      [64, 64], [86, 86], [128, 128], [128, 400]]
-anchors.aspect_ratios = [[2, 3], [2, 3], [2, 3], [2, 3], [2, 3], [2, 3]]
+anchors.aspect_ratios = [[2, 3], [2, 3], [2, 3], [2, 3], [2], [2]]
 
 train_cpu_transform = L(torchvision.transforms.Compose)(transforms=[
     L(RandomSampleCrop)(),
