@@ -10,7 +10,7 @@ class BiFPN(nn.Module):
         super(BiFPN, self).__init__()
         
         P1_channels, P2_channels, P3_channels, P4_channels, P5_channels, P6_channels = fpn_sizes
-        self.W_bifpn = 256
+        self.W_bifpn = 64
 
         self.p6_upsample = nn.Upsample(scale_factor=2, mode='nearest')
 
@@ -168,7 +168,7 @@ class biFPN(torch.nn.Module):
             super().__init__()
             
             self.output_feature_shape = output_feature_sizes
-            self.out_channels = [256, 256, 256, 256, 256, 256]
+            self.out_channels = [64, 64, 64, 64, 64, 64]
             
             model = getattr(models, model_type)(pretrained=pretrained)
             

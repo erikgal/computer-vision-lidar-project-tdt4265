@@ -26,11 +26,12 @@ class DeeperRegHeads(nn.Module):
         self.num_classes = num_classes
         self.regression_heads = []
         self.classification_heads = []
+        self.anchor_prob_init = anchor_prob_init
         # parameters for deeper head regression
         self.n_boxes = 6
         self.p = p
-        out_ch = 256
-        in_ch = 256
+        out_ch = 64
+        in_ch = 64
 
         # construction of the deeper regression heads
         self.regression_layers = nn.Sequential(
@@ -75,9 +76,9 @@ class DeeperRegHeads(nn.Module):
         self.regression_heads = nn.ModuleList(self.regression_heads)
         self.classification_heads = nn.ModuleList(self.classification_heads)
         self.anchor_encoder = AnchorEncoder(anchors)
-        self._init_weights()
+        self.improved_init_weights() if self.anchor_prob_init else self._init_weights()
     
-    def _init_weights(self):
+    def improved_init_weights(self):
         regression_layers = [self.regression_heads]
         classification_layers = [self.classification_heads]
         for layer in regression_layers:
@@ -103,14 +104,12 @@ class DeeperRegHeads(nn.Module):
         nn.init.constant_(last_layer_bias[0:6], b)
 
     
-
-    """
     def _init_weights(self):
         layers = [*self.regression_heads, *self.classification_heads]
         for layer in layers:
             for param in layer.parameters():
                 if param.dim() > 1: nn.init.xavier_uniform_(param)
-    """
+    
     def regress_boxes(self, features):
         locations = []
         confidences = []

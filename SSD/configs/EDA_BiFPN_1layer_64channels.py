@@ -7,7 +7,7 @@ from ssd.data.transforms import (
     GroundTruthBoxesToAnchors,  RandomHorizontalFlip, Resize, RandomSampleCrop, ColorJitter)
 from .ssd300 import train, anchors, optimizer, schedulers, data_train, data_val, model
 from .utils import get_dataset_dir
-from ssd.modeling.backbones import FPN
+from ssd.modeling.backbones import biFPN
 from ssd.modeling.focal_loss import FocalLoss
 from ssd.modeling.deeper_reg_heads import DeeperRegHeads
 
@@ -55,7 +55,7 @@ data_train.gpu_transform = gpu_transform
 label_map = {idx: cls_name for idx,
              cls_name in enumerate(TDT4265Dataset.class_names)}
 
-backbone = L(FPN)(
+backbone = L(biFPN)(
     model_type="resnet34", 
     pretrained=True, 
     output_feature_sizes="${anchors.feature_sizes}")
