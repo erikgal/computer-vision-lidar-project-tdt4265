@@ -22,8 +22,8 @@ model.num_classes = 8 + 1  # Add 1 for background class
 anchors.feature_sizes = [[32, 256], [16, 128],
                          [8, 64], [4, 32], [2, 16], [1, 8]]
 anchors.strides = [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64], [128, 128]]
-anchors.min_sizes = [[16, 16], [32, 32], [48, 48],
-                     [64, 64], [86, 86], [128, 128], [128, 400]]
+anchors.min_sizes = [[16, 4], [24, 8], [26, 14],
+                     [36, 24], [56, 48], [75, 150], [128, 400]]
 anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 3]]
 
 train_cpu_transform = L(torchvision.transforms.Compose)(transforms=[
@@ -42,23 +42,27 @@ gpu_transform = L(torchvision.transforms.Compose)(transforms=[
     L(Normalize)(mean=[0.4765, 0.4774, 0.2259], std=[0.2951, 0.2864, 0.2878])
 ])
 data_train.dataset = L(TDT4265Dataset)(
-    img_folder=get_dataset_dir("tdt4265_2022"),
+    img_folder=get_dataset_dir("tdt4265_2022_updated"),
     transform="${train_cpu_transform}",
-    annotation_file=get_dataset_dir("tdt4265_2022/train_annotations.json"))
+    annotation_file=get_dataset_dir("tdt4265_2022_updated/train_annotations.json"))
 data_val.dataset = L(TDT4265Dataset)(
-    img_folder=get_dataset_dir("tdt4265_2022"),
+    img_folder=get_dataset_dir("tdt4265_2022_updated"),
     transform="${val_cpu_transform}",
-    annotation_file=get_dataset_dir("tdt4265_2022/val_annotations.json"))
+    annotation_file=get_dataset_dir("tdt4265_2022_updated/val_annotations.json"))
 data_val.gpu_transform = gpu_transform
 data_train.gpu_transform = gpu_transform
 
 label_map = {idx: cls_name for idx,
              cls_name in enumerate(TDT4265Dataset.class_names)}
 
+fpn_out_channels = 256
+
 backbone = L(FPN)(
     model_type="resnet34", 
     pretrained=True, 
-    output_feature_sizes="${anchors.feature_sizes}")
+    output_feature_sizes="${anchors.feature_sizes}",
+    out_channels=fpn_out_channels
+)
 
 loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.01, *[1 for i in range(model.num_classes-1)]])
 
@@ -68,7 +72,9 @@ model = L(DeeperRegHeads)(
     anchors="${anchors}",
     loss_objective="${loss_objective}",
     num_classes=8 + 1,
-    anchor_prob_init=False,
+    anchor_prob_init=True,
     p = 0.99,
+    in_ch = fpn_out_channels,
+    out_ch = 256,
 )
 

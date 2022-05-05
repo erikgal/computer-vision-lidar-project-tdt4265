@@ -5,8 +5,13 @@ from tops.config import LazyCall as L
 from ssd.data.transforms import (
     ToTensor, Normalize, Resize,
     GroundTruthBoxesToAnchors,  RandomHorizontalFlip, Resize, RandomSampleCrop, ColorJitter)
-from .ssd300 import train, anchors, optimizer, schedulers, backbone, model, data_train, data_val, loss_objective
+from .ssd300 import train, anchors, optimizer, schedulers, data_train, data_val, model
 from .utils import get_dataset_dir
+from ssd.modeling.backbones import biFPN
+from ssd.modeling.focal_loss import FocalLoss
+from ssd.modeling.deeper_reg_heads import DeeperRegHeads
+
+
 
 # Keep the model, except change the backbone and number of classes
 train.imshape = (128, 1024)
@@ -19,7 +24,7 @@ anchors.feature_sizes = [[32, 256], [16, 128],
 anchors.strides = [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64], [128, 128]]
 anchors.min_sizes = [[16, 16], [32, 32], [48, 48],
                      [64, 64], [86, 86], [128, 128], [128, 400]]
-anchors.aspect_ratios = [[2, 3], [2, 3], [2, 3], [2, 3], [2], [2]]
+anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 3]]
 
 train_cpu_transform = L(torchvision.transforms.Compose)(transforms=[
     L(RandomSampleCrop)(),
@@ -37,15 +42,38 @@ gpu_transform = L(torchvision.transforms.Compose)(transforms=[
     L(Normalize)(mean=[0.4765, 0.4774, 0.2259], std=[0.2951, 0.2864, 0.2878])
 ])
 data_train.dataset = L(TDT4265Dataset)(
-    img_folder=get_dataset_dir("tdt4265_2022"),
+    img_folder=get_dataset_dir("tdt4265_2022_updated"),
     transform="${train_cpu_transform}",
-    annotation_file=get_dataset_dir("tdt4265_2022/train_annotations.json"))
+    annotation_file=get_dataset_dir("tdt4265_2022_updated/train_annotations.json"))
 data_val.dataset = L(TDT4265Dataset)(
-    img_folder=get_dataset_dir("tdt4265_2022"),
+    img_folder=get_dataset_dir("tdt4265_2022_updated"),
     transform="${val_cpu_transform}",
-    annotation_file=get_dataset_dir("tdt4265_2022/val_annotations.json"))
+    annotation_file=get_dataset_dir("tdt4265_2022_updated/val_annotations.json"))
 data_val.gpu_transform = gpu_transform
 data_train.gpu_transform = gpu_transform
 
 label_map = {idx: cls_name for idx,
              cls_name in enumerate(TDT4265Dataset.class_names)}
+
+fpn_out_channels = 64
+
+backbone = L(biFPN)(
+    model_type="resnet34", 
+    pretrained=True, 
+    output_feature_sizes="${anchors.feature_sizes}",
+    out_channels=fpn_out_channels)
+
+loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.01, *[1 for i in range(model.num_classes-1)]])
+
+
+model = L(DeeperRegHeads)(
+    feature_extractor="${backbone}",
+    anchors="${anchors}",
+    loss_objective="${loss_objective}",
+    num_classes=8 + 1,
+    anchor_prob_init=True,
+    p = 0.99,
+    in_ch = fpn_out_channels,
+    out_ch = 64,
+)
+

@@ -13,6 +13,8 @@ class DeeperRegHeads(nn.Module):
                  num_classes: int,
                  anchor_prob_init,
                  p: int,
+                 in_ch: int,
+                 out_ch: int,
                  ):
 
         super().__init__()
@@ -26,24 +28,26 @@ class DeeperRegHeads(nn.Module):
         self.num_classes = num_classes
         self.regression_heads = []
         self.classification_heads = []
+        self.anchor_prob_init = anchor_prob_init
         # parameters for deeper head regression
         self.n_boxes = 6
         self.p = p
-        out_ch = 256
-        in_ch = 256
+        self.in_ch = in_ch
+        self.out_ch = out_ch
+
 
         # construction of the deeper regression heads
         self.regression_layers = nn.Sequential(
             nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
             nn.Conv2d(out_ch, self.n_boxes * 4, kernel_size=3,
@@ -55,13 +59,13 @@ class DeeperRegHeads(nn.Module):
             nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
-            nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
+            nn.Conv2d(in_channels=out_ch, out_channels=out_ch,
                       kernel_size=3, padding=1),
             nn.LeakyReLU(),
             nn.Conv2d(out_ch, self.n_boxes * self.num_classes, kernel_size=3,
@@ -75,9 +79,9 @@ class DeeperRegHeads(nn.Module):
         self.regression_heads = nn.ModuleList(self.regression_heads)
         self.classification_heads = nn.ModuleList(self.classification_heads)
         self.anchor_encoder = AnchorEncoder(anchors)
-        self._init_weights()
+        self.improved_init_weights() if self.anchor_prob_init else self._init_weights()
     
-    def _init_weights(self):
+    def improved_init_weights(self):
         regression_layers = [self.regression_heads]
         classification_layers = [self.classification_heads]
         for layer in regression_layers:
@@ -103,14 +107,12 @@ class DeeperRegHeads(nn.Module):
         nn.init.constant_(last_layer_bias[0:6], b)
 
     
-
-    """
     def _init_weights(self):
         layers = [*self.regression_heads, *self.classification_heads]
         for layer in layers:
             for param in layer.parameters():
                 if param.dim() > 1: nn.init.xavier_uniform_(param)
-    """
+    
     def regress_boxes(self, features):
         locations = []
         confidences = []

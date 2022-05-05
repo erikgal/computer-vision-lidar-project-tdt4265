@@ -8,7 +8,6 @@ from .tdt4265 import (
     schedulers, 
     loss_objective,
     model, 
-    #backbone, 
     data_train, 
     data_val, 
     train_cpu_transform,
@@ -20,4 +19,6 @@ from .tdt4265 import (
 backbone = L(FPN)(
     model_type="resnet34", 
     pretrained=True, 
-    output_feature_sizes="${anchors.feature_sizes}")
+    output_feature_sizes="${anchors.feature_sizes}",
+    out_channels=256,
+    )
