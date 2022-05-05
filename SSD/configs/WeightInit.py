@@ -20,6 +20,6 @@ model = L(DeeperRegHeads)(
     anchors="${anchors}",
     loss_objective="${loss_objective}",
     num_classes=8 + 1,
-    anchor_prob_init=False,
+    anchor_prob_init=True,
     p = 0.99,
 )
