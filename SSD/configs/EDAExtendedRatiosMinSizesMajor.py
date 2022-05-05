@@ -22,8 +22,8 @@ model.num_classes = 8 + 1  # Add 1 for background class
 anchors.feature_sizes = [[32, 256], [16, 128],
                          [8, 64], [4, 32], [2, 16], [1, 8]]
 anchors.strides = [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64], [128, 128]]
-anchors.min_sizes = [[16, 16], [32, 32], [48, 48],
-                     [64, 64], [86, 86], [128, 128], [128, 400]]
+anchors.min_sizes = [[16, 4], [24, 8], [26, 14],
+                     [36, 24], [56, 48], [75, 150], [128, 400]]
 anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 3]]
 
 train_cpu_transform = L(torchvision.transforms.Compose)(transforms=[
@@ -68,7 +68,7 @@ model = L(DeeperRegHeads)(
     anchors="${anchors}",
     loss_objective="${loss_objective}",
     num_classes=8 + 1,
-    anchor_prob_init=False,
+    anchor_prob_init=True,
     p = 0.99,
 )
 
