@@ -16,7 +16,7 @@ from tops.config import LazyCall as L
 from ssd.modeling.backbones import biFPN
 from ssd.modeling.deeper_reg_heads import DeeperRegHeads
 
-anchors.aspect_ratios = [[2, 3], [2, 3], [2, 3], [2, 3], [2, 3], [2, 3]]
+anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 3]]
 
 fpn_out_channels = 64
 
