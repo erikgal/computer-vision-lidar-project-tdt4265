@@ -21,4 +21,4 @@ backbone = L(FPN)(
     pretrained=True, 
     output_feature_sizes="${anchors.feature_sizes}",
     out_channels=256,
-    )
+)

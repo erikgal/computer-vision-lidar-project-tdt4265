@@ -61,7 +61,8 @@ backbone = L(biFPN)(
     model_type="resnet34", 
     pretrained=True, 
     output_feature_sizes="${anchors.feature_sizes}",
-    out_channels=fpn_out_channels)
+    out_channels=fpn_out_channels,
+    nbr_layers = 3)
 
 loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.01, *[1 for i in range(model.num_classes-1)]])
 

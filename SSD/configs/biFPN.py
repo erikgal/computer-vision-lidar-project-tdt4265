@@ -16,13 +16,16 @@ from tops.config import LazyCall as L
 from ssd.modeling.backbones import biFPN
 from ssd.modeling.deeper_reg_heads import DeeperRegHeads
 
+anchors.aspect_ratios = [[2, 3], [2, 3], [2, 3], [2, 3], [2, 3], [2, 3]]
+
 fpn_out_channels = 64
 
 backbone = L(biFPN)(
     model_type="resnet34", 
     pretrained=True, 
     output_feature_sizes="${anchors.feature_sizes}",
-    out_channels=fpn_out_channels)
+    out_channels=fpn_out_channels,
+    nbr_layers = 2)
 
 model = L(DeeperRegHeads)(
     feature_extractor="${backbone}",

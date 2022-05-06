@@ -79,10 +79,11 @@ def train(config_path: Path, evaluate_only: bool):
     checkpointer.register_models(
         dict(model=model, optimizer=optimizer, scheduler=scheduler))
     total_time = 0
-    if checkpointer.has_checkpoint():
-        train_state = checkpointer.load_registered_models(load_best=False)
-        total_time = train_state["total_time"]
-        logger.log(f"Resuming train from: epoch: {logger.epoch()}, global step: {logger.global_step()}")
+    print("HasCheskpoint", checkpointer.has_checkpoint())
+    #if checkpointer.has_checkpoint():
+    #    train_state = checkpointer.load_registered_models(load_best=False)
+    #    total_time = train_state["total_time"]
+    #    logger.log(f"Resuming train from: epoch: {logger.epoch()}, global step: {logger.global_step()}")
 
     gpu_transform_val = instantiate(cfg.data_val.gpu_transform)
     gpu_transform_train = instantiate(cfg.data_train.gpu_transform)
