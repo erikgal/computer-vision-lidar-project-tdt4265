@@ -1,4 +1,4 @@
-from .FPN import (
+from .WeightInit import (
     train,
     optimizer,
     schedulers,
@@ -10,22 +10,14 @@ from .FPN import (
     gpu_transform,
     label_map,
     anchors,
+    backbone,
     model
 )
+from ssd.modeling.focal_loss import FocalLoss
 from tops.config import LazyCall as L
-from ssd.modeling.backbones import biFPN
 from ssd.modeling.deeper_reg_heads import DeeperRegHeads
 
-anchors.aspect_ratios = [[2, 4], [2, 4], [2, 4], [2, 4], [2, 4], [2, 3]]
-
-fpn_out_channels = 64
-
-backbone = L(biFPN)(
-    model_type="resnet34", 
-    pretrained=True, 
-    output_feature_sizes="${anchors.feature_sizes}",
-    out_channels=fpn_out_channels,
-    nbr_layers = 3)
+loss_objective = L(FocalLoss)(anchors="${anchors}", alpha = [0.01, 1/0.50008, 7.0, 4.0, 0, 1/0.60289, 3, 1/0.29090, 4])
 
 model = L(DeeperRegHeads)(
     feature_extractor="${backbone}",
@@ -34,6 +26,6 @@ model = L(DeeperRegHeads)(
     num_classes=8 + 1,
     anchor_prob_init=True,
     p = 0.99,
-    in_ch = fpn_out_channels,
+    in_ch = 256,
     out_ch = 256,
 )
