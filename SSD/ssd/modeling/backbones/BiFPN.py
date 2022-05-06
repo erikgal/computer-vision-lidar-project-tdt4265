@@ -18,92 +18,121 @@ class BiFPN(nn.Module):
         self.p5_td_conv_2  = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p5_td_act   = nn.ReLU().cuda()
         self.p5_td_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p5_td_w1    = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p5_td_w2    = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p5_td_w1    = torch.tensor(1, dtype=torch.float).cuda()
+        self.p5_td_w2    = torch.tensor(1, dtype=torch.float).cuda()
         self.p5_upsample = nn.Upsample(scale_factor=2, mode='nearest').cuda()
 
         self.p4_td_conv  = nn.Conv2d(P4_channels,self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1).cuda()
         self.p4_td_conv_2  = nn.Conv2d(self.W_bifpn,self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p4_td_act   = nn.ReLU().cuda()
         self.p4_td_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p4_td_w1    = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p4_td_w2    = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p4_td_w1    = torch.tensor(1, dtype=torch.float).cuda()
+        self.p4_td_w2    = torch.tensor(1, dtype=torch.float).cuda()
 
         self.p3_td_conv  = nn.Conv2d(P3_channels, self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1).cuda()
         self.p3_td_conv_2  = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p3_td_act   = nn.ReLU().cuda()
         self.p3_td_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p3_td_w1    = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p3_td_w2    = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p3_td_w1    = torch.tensor(1, dtype=torch.float).cuda()
+        self.p3_td_w2    = torch.tensor(1, dtype=torch.float).cuda()
         self.p4_upsample   = nn.Upsample(scale_factor=2, mode='nearest').cuda()
 
         self.p2_td_conv = nn.Conv2d(P2_channels, self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1).cuda()
         self.p2_td_conv_2 = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p2_td_act   = nn.ReLU().cuda()
         self.p2_td_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p2_td_w1   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p2_td_w2   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p2_td_w1   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p2_td_w2   = torch.tensor(1, dtype=torch.float).cuda()
         self.p3_upsample  = nn.Upsample(scale_factor=2, mode='nearest').cuda()
 
         self.p1_out_conv = nn.Conv2d(P1_channels, self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1).cuda()
         self.p1_out_conv_2 = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p1_out_act   = nn.ReLU().cuda()
         self.p1_out_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p1_out_w1   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p1_out_w2   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p1_out_w1   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p1_out_w2   = torch.tensor(1, dtype=torch.float).cuda()
         self.p2_upsample  = nn.Upsample(scale_factor=2, mode='nearest').cuda()
 
         self.p2_out_conv = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p2_out_act   = nn.ReLU().cuda()
         self.p2_out_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p2_out_w1   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p2_out_w2   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p2_out_w3   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p2_out_w1   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p2_out_w2   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p2_out_w3   = torch.tensor(1, dtype=torch.float).cuda()
         self.p1_downsample= nn.MaxPool2d(kernel_size=2).cuda()
 
         self.p3_out_conv = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p3_out_act   = nn.ReLU().cuda()
         self.p3_out_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p3_out_w1   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p3_out_w2   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p3_out_w3   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p3_out_w1   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p3_out_w2   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p3_out_w3   = torch.tensor(1, dtype=torch.float).cuda()
         self.p2_downsample= nn.MaxPool2d(kernel_size=2).cuda()
 
         self.p4_out_conv = nn.Conv2d(self.W_bifpn, self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p4_out_act   = nn.ReLU().cuda()
         self.p4_out_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p4_out_w1   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p4_out_w2   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p4_out_w3   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p4_out_w1   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p4_out_w2   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p4_out_w3   = torch.tensor(1, dtype=torch.float).cuda()
         self.p3_downsample= nn.MaxPool2d(kernel_size=2)
 
         self.p5_out_conv = nn.Conv2d(self.W_bifpn,self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p5_out_act   = nn.ReLU().cuda()
         self.p5_out_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p5_out_w1   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p5_out_w2   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p5_out_w3   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p5_out_w1   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p5_out_w2   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p5_out_w3   = torch.tensor(1, dtype=torch.float).cuda()
         self.p4_downsample = nn.MaxPool2d(kernel_size=2).cuda()
 
         self.p6_out_conv = nn.Conv2d(P6_channels, self.W_bifpn, kernel_size=3, stride=1, bias=True, padding=1).cuda()
         self.p6_out_conv_2 = nn.Conv2d(self.W_bifpn,self.W_bifpn, kernel_size=3, stride=1, groups=self.W_bifpn, bias=True, padding=1).cuda()
         self.p6_out_act  = nn.ReLU().cuda()
         self.p6_out_conv_bn = nn.BatchNorm2d(self.W_bifpn).cuda()
-        self.p6_out_w1   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
-        self.p6_out_w2   = torch.nn.Parameter(torch.tensor(1, dtype=torch.float, requires_grad=True)).cuda()
+        self.p6_out_w1   = torch.tensor(1, dtype=torch.float).cuda()
+        self.p6_out_w2   = torch.tensor(1, dtype=torch.float).cuda()
         self.p5_downsample = nn.MaxPool2d(kernel_size=2).cuda()
 
     def forward(self, inputs):
         epsilon = 0.0001
         P1, P2, P3, P4, P5, P6 = inputs['0'], inputs['1'], inputs['2'], inputs['3'], inputs['4'], inputs['5']
 
+        self.p5_td_w1 = self.p5_td_act(self.p5_td_w1) / (self.p5_td_w1 + self.p5_td_w2 + epsilon)
+        self.p5_td_w2 = self.p5_td_act(self.p5_td_w2) / (self.p5_td_w1 + self.p5_td_w2 + epsilon)
 
+        self.p4_td_w1 = self.p4_td_act(self.p4_td_w1) / (self.p4_td_w1 + self.p4_td_w2 + epsilon)
+        self.p4_td_w2 = self.p4_td_act(self.p4_td_w2) / (self.p4_td_w1 + self.p4_td_w2 + epsilon)
+
+        self.p3_td_w1 = self.p3_td_act(self.p3_td_w1) / (self.p3_td_w1 + self.p3_td_w2 + epsilon)
+        self.p3_td_w2 = self.p3_td_act(self.p3_td_w2) / (self.p3_td_w1 + self.p3_td_w2 + epsilon)
+
+        self.p2_td_w1 = self.p2_td_act(self.p2_td_w1) / (self.p2_td_w1 + self.p2_td_w2 + epsilon)
+        self.p2_td_w2 = self.p2_td_act(self.p2_td_w2) / (self.p2_td_w1 + self.p2_td_w2 + epsilon)
+
+        self.p1_out_w1 = self.p1_out_act(self.p1_out_w1) / (self.p1_out_w1 + self.p1_out_w2 + epsilon)
+        self.p1_out_w2 = self.p1_out_act(self.p1_out_w2) / (self.p1_out_w1 + self.p1_out_w2 + epsilon)
+
+        self.p2_out_w1 = self.p1_out_act(self.p2_out_w1) / (self.p2_out_w1 + self.p2_out_w2 + self.p2_out_w3 + epsilon)
+        self.p2_out_w2 = self.p1_out_act(self.p2_out_w2) / (self.p2_out_w1 + self.p2_out_w2 + self.p2_out_w3 + epsilon)
+        self.p2_out_w3 = self.p1_out_act(self.p2_out_w3) / (self.p2_out_w1 + self.p2_out_w2 + self.p2_out_w3 + epsilon)
+
+        self.p3_out_w1 = self.p3_out_act(self.p3_out_w1) / (self.p3_out_w1 + self.p3_out_w2 + self.p3_out_w3 + epsilon)
+        self.p3_out_w2 = self.p3_out_act(self.p3_out_w2) / (self.p3_out_w1 + self.p3_out_w2 + self.p3_out_w3 + epsilon)
+        self.p3_out_w3 = self.p3_out_act(self.p3_out_w3) / (self.p3_out_w1 + self.p3_out_w2 + self.p3_out_w3 + epsilon)
+
+        self.p4_out_w1 = self.p4_out_act(self.p4_out_w1) / (self.p4_out_w1 + self.p4_out_w2 + self.p4_out_w3 + epsilon)
+        self.p4_out_w2 = self.p4_out_act(self.p4_out_w2) / (self.p4_out_w1 + self.p4_out_w2 + self.p4_out_w3 + epsilon)
+        self.p4_out_w3 = self.p4_out_act(self.p4_out_w3) / (self.p4_out_w1 + self.p4_out_w2 + self.p4_out_w3 + epsilon)
+
+        self.p5_out_w1 = self.p5_out_act(self.p5_out_w1) / (self.p5_out_w1 + self.p5_out_w2 + self.p5_out_w3 + epsilon)
+        self.p5_out_w2 = self.p5_out_act(self.p5_out_w2) / (self.p5_out_w1 + self.p5_out_w2 + self.p5_out_w3 + epsilon)
+        self.p5_out_w3 = self.p5_out_act(self.p5_out_w3) / (self.p5_out_w1 + self.p5_out_w2 + self.p5_out_w3 + epsilon)
+
+        self.p6_out_w1 = self.p6_out_act(self.p6_out_w1) / (self.p6_out_w1 + self.p6_out_w2 + epsilon)
+        self.p6_out_w2 = self.p6_out_act(self.p6_out_w2) / (self.p6_out_w1 + self.p6_out_w2 + epsilon)
 
         P6_td  = self.p6_out_conv(P6)
         P5_td_inp = self.p5_td_conv(P5)
-
-        self.p5_td_w1 = self.p5_td_act(self.p5_td_w1) / (self.p5_td_w1 + self.p5_td_w2 + epsilon)
-        self.p5_td_w2 = self.p5_td_act(self.p5_td_w2) / (self.p5_td_w1 + self.p5_td_w2 + epsilon)
 
         P5_td = self.p5_td_conv_2(self.p5_td_w1 * P5_td_inp + self.p5_td_w2 * self.p6_upsample(P6_td))                 
 
@@ -112,53 +141,45 @@ class BiFPN(nn.Module):
          
         P4_td_inp = self.p4_td_conv(P4)
 
-        self.p4_td_w1 = self.p4_td_act(self.p4_td_w1) / (self.p4_td_w1 + self.p4_td_w2 + epsilon)
-        self.p4_td_w2 = self.p4_td_act(self.p4_td_w2) / (self.p4_td_w1 + self.p4_td_w2 + epsilon)
-
         P4_td = self.p4_td_conv_2(self.p4_td_w1 * P4_td_inp + self.p4_td_w2 * self.p5_upsample(P5_td))
         P4_td = self.p4_td_act(P4_td)
         P4_td = self.p4_td_conv_bn(P4_td)
 
         P3_td_inp = self.p3_td_conv(P3)
-        P3_td = self.p3_td_conv_2((self.p3_td_w1 * P3_td_inp + self.p3_td_w2 * self.p4_upsample(P4_td)) /
-                                 (self.p3_td_w1 + self.p3_td_w2 + epsilon))
+
+        P3_td = self.p3_td_conv_2(self.p3_td_w1 * P3_td_inp + self.p3_td_w2 * self.p4_upsample(P4_td))
         P3_td = self.p3_td_act(P3_td)
         P3_td = self.p3_td_conv_bn(P3_td)
 
         P2_td_inp = self.p2_td_conv(P2)
-        P2_td = self.p2_td_conv_2((self.p2_td_w1 * P2_td_inp + self.p2_td_w2 * self.p3_upsample(P3_td)) /
-                                 (self.p2_td_w1 + self.p2_td_w2 + epsilon))
+
+        P2_td = self.p2_td_conv_2(self.p2_td_w1 * P2_td_inp + self.p2_td_w2 * self.p3_upsample(P3_td))
         P2_td = self.p2_td_act(P2_td)
         P2_td = self.p2_td_conv_bn(P2_td)
 
         P1_td  = self.p1_out_conv(P1)
-        P1_out = self.p1_out_conv_2((self.p1_out_w1 * P1_td + self.p1_out_w2 * self.p2_upsample(P2_td)) /
-                                 (self.p1_out_w1 + self.p1_out_w2 + epsilon))
+
+        P1_out = self.p1_out_conv_2(self.p1_out_w1 * P1_td + self.p1_out_w2 * self.p2_upsample(P2_td))
         P1_out = self.p1_out_act(P1_out)
         P1_out = self.p1_out_conv_bn(P1_out)
 
-        P2_out = self.p2_out_conv((self.p2_out_w1 * P2_td_inp  + self.p2_out_w2 * P2_td + self.p2_out_w3 * self.p1_downsample(P1_out) )
-                                    / (self.p2_out_w1 + self.p2_out_w2 + self.p2_out_w3 + epsilon))
+        P2_out = self.p2_out_conv(self.p2_out_w1 * P2_td_inp  + self.p2_out_w2 * P2_td + self.p2_out_w3 * self.p1_downsample(P1_out))
         P2_out = self.p2_out_act(P2_out)
         P2_out = self.p2_out_conv_bn(P2_out)
 
-        P3_out = self.p3_out_conv((self.p3_out_w1 * P3_td_inp  + self.p3_out_w2 * P3_td + self.p3_out_w3 * self.p2_downsample(P2_out) )
-                                    / (self.p3_out_w1 + self.p3_out_w2 + self.p3_out_w3 + epsilon))
+        P3_out = self.p3_out_conv(self.p3_out_w1 * P3_td_inp  + self.p3_out_w2 * P3_td + self.p3_out_w3 * self.p2_downsample(P2_out))
         P3_out = self.p3_out_act(P3_out)
         P3_out = self.p3_out_conv_bn(P3_out)
 
-        P4_out = self.p4_out_conv((self.p4_out_w1 * P4_td_inp  + self.p4_out_w2 * P4_td + self.p4_out_w3 * self.p3_downsample(P3_out) )
-                                    / (self.p4_out_w1 + self.p4_out_w2 + self.p4_out_w3 + epsilon))
+        P4_out = self.p4_out_conv(self.p4_out_w1 * P4_td_inp  + self.p4_out_w2 * P4_td + self.p4_out_w3 * self.p3_downsample(P3_out))
         P4_out = self.p4_out_act(P4_out)
         P4_out = self.p4_out_conv_bn(P4_out)
         
-        P5_out = self.p5_out_conv((self.p5_out_w1 * P5_td_inp + self.p5_out_w2 * P5_td + self.p5_out_w3 * self.p4_downsample(P4_out) )
-                                    / (self.p5_out_w1 + self.p5_out_w2 + self.p5_out_w3 + epsilon))
+        P5_out = self.p5_out_conv(self.p5_out_w1 * P5_td_inp + self.p5_out_w2 * P5_td + self.p5_out_w3 * self.p4_downsample(P4_out))
         P5_out = self.p5_out_act(P5_out)
         P5_out = self.p5_out_conv_bn(P5_out)
         
-        P6_out = self.p6_out_conv_2((self.p6_out_w1 * P6_td + self.p6_out_w2 * self.p5_downsample(P5_out)) /
-                                 (self.p6_out_w1 + self.p6_out_w2 + epsilon))
+        P6_out = self.p6_out_conv_2(self.p6_out_w1 * P6_td + self.p6_out_w2 * self.p5_downsample(P5_out))
         P6_out = self.p6_out_act(P6_out)
         P6_out = self.p6_out_conv_bn(P6_out)
 
@@ -257,8 +278,6 @@ class biFPN(torch.nn.Module):
                 out_channel = self.out_channels[idx]
                 h, w = self.output_feature_shape[idx]
                 expected_shape = (out_channel, h, w)
-
-                print(feature.shape[1:], expected_shape)
                 assert feature.shape[1:] == expected_shape, \
                     f"Expected shape: {expected_shape}, got: {feature.shape[1:]} at output IDX: {idx}"
             assert len(out_features) == len(self.output_feature_shape),\
