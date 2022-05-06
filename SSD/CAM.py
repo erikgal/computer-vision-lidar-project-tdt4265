@@ -29,7 +29,7 @@ from pytorch_grad_cam.utils.image import show_cam_on_image, scale_accross_batch_
 
 def run_demo(config_path: Path, score_threshold: float, image_dir: Path, output_dir: Path):
 
-    score_threshold=0.5
+    score_threshold=0.7
     config_path = Path(config_path)
     image_dir = Path(image_dir)
     output_dir = Path(output_dir)
